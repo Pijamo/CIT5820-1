@@ -9,9 +9,9 @@ def sign(m):
 	#Your code here
 
 	private_key, public_key = keys.gen_keypair(curve.secp256k1)
-	r, s = ecdsa.sign(m, private_key)
+	r, s = ecdsa.sign(m, private_key, curve=curve.secp256k1)
 
-	
+
 	encrypted_message = []
 	encrypted_message.append(r)
 	encrypted_message.append(s)
