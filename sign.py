@@ -11,12 +11,6 @@ def sign(m):
 	private_key, public_key = keys.gen_keypair(curve.secp256k1)
 	r, s = ecdsa.sign(m, private_key, curve=curve.secp256k1)
 
-
-	encrypted_message = []
-	encrypted_message.append(r)
-	encrypted_message.append(s)
-
-
 	assert isinstance( public_key, point.Point )
 	assert isinstance( r, int )
 	assert isinstance( s, int )
