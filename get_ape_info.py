@@ -44,7 +44,15 @@ def get_ape_info(apeID):
     image = data_1['image']
     attributes = data_1['image']
     image = data_1['image']
-    eyes = data_1['attributes'][3]['value']
+
+
+    for attr in data_1['attributes']:
+
+        if attr['trait_type'] == 'Eyes':
+            eyes = attr['value']
+
+
+
 
 
 
@@ -64,7 +72,7 @@ def get_ape_info(apeID):
 
 def main():
     bayc_address = "0xBC4CA0EdA7647A8aB7C2061c2E118A18a936f13D"
-    get_ape_info(1)
+    get_ape_info(6335)
 
 
 if __name__ == '__main__':
