@@ -44,11 +44,12 @@ def get_ape_info(apeID):
     image = data_1['image']
     attributes = data_1['image']
     image = data_1['image']
-    eyes = data_1['attributes'][3]
+    eyes = data_1['attributes'][3]['value']
+
 
 
     contract = web3.eth.contract(address=contract_address, abi=abi)
-    owner = contract.functions.owner().call()
+    owner = contract.functions.ownerOf(apeID).call()
 
     data['owner'] = owner
     data['image'] = image
@@ -58,6 +59,7 @@ def get_ape_info(apeID):
     assert isinstance(data, dict), f'get_ape_info{apeID} should return a dict'
     assert all([a in data.keys() for a in
                 ['owner', 'image', 'eyes']]), f"return value should include the keys 'owner','image' and 'eyes'"
+    print(data['owner'],data['image'],data['eyes'] )
     return data
 
 def main():
