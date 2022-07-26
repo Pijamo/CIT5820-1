@@ -49,8 +49,7 @@ def send_tokens(receiver_pk, tx_amount):
     sender_pk = account.address_from_private_key(sender_sk)
     existing_account = account_public_key
 
-    tx = transaction.PaymentTxn(existing_account, fee, first_valid_round, last_valid_round, gh, receiver_pk,
-                                send_amount)
+    tx = transaction.PaymentTxn(sender_pk, params, receiver_pk, tx_amount)
     signed_tx = tx.sign(account_private_key)
 
     txid = None
@@ -82,3 +81,14 @@ def wait_for_confirmation(client, txid):
         txinfo = client.pending_transaction_info(txid)
     print("Transaction {} confirmed in round {}.".format(txid, txinfo.get('confirmed-round')))
     return txinfo
+
+
+def main():
+    private_key, account_address = account.generate_account()
+    account_public_key = account.address_from_private_key(private_key)
+    send_tokens(account_public_key, 1)
+
+
+
+if __name__ == '__main__':
+    main()
