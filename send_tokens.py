@@ -22,46 +22,33 @@ def send_tokens(receiver_pk, tx_amount):
     sender_sk: private key of sender
     txes: list of transactions
     """
-
     # TODO: You might want to adjust the first/last valid rounds in the suggested_params
     #       See guide for details
 
     # TODO: For each transaction, do the following:
     #       - Create the Payment transaction
     #       - Sign the transaction
-
     # TODO: Return a list of transaction id's
     params = acl.suggested_params()
-
     gen = params.gen
     gh = params.gh
     first_valid_round = params.first
     last_valid_round = params.last
     fee = params.min_fee
     send_amount = 1
-
     mnemonic_phrase = "day lecture object wedding slot spider sort sleep fuel input transfer immense uphold blossom discover already consider service arrow tunnel eager peasant gasp absent tray"
     sender_account_address = "ZFLTFLXTOB3F2ZIONLPOTJQJP6R4T3LHHH5ODTOBZX6M2XTQ5RQXQUXUQI"
     sender_sk = "wMEfMI8P5kbzOcvvKl3OGWd3YNwnB3oJcRmofqKIBqzJVzKu83B2XWUOat7ppgl/o8ntZzn64c3BzfzNXnDsYQ=="
     account_private_key = mnemonic.to_private_key(mnemonic_phrase)
     account_public_key = account.address_from_private_key(account_private_key)
-
-    sender_pk = account.address_from_private_key(sender_sk)
-    existing_account = account_public_key
+    sender_pk = account.address_from_private_key(account_private_key)
 
     tx = transaction.PaymentTxn(sender_pk, params, receiver_pk, tx_amount)
     signed_tx = tx.sign(account_private_key)
-
             # TODO: Send the transaction to the testnet
     acl.send_transaction(signed_tx)
     txid = acl.send_transaction(signed_tx)
     is_done = wait_for_confirmation(acl, txid)
-
-
-
-    print(account_public_key)
-    print(txid)
-
     return account_public_key, txid
 
 
