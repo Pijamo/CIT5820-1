@@ -11,10 +11,10 @@ DBSession = sessionmaker(bind=engine)
 session = DBSession()
 
 def match(order, existing_order):
-    if existing_order.filled==None:
-        if existing_order.buy_currency==order.sell_currency:
-            if existing_order.sell_currency==order.buy_currency:
-                if existing_order.sell_amount / existing_order.buy_amount >= order.buy_amount / order.sell_amount:
+    if not existing_order.filled:
+        if existing_order.sell_currency == order.buy_currency:
+            if order.sell_currency == existing_order.buy_currency:
+                if order.buy_amount / order.sell_amount <= existing_order.sell_amount / existing_order.buy_amount:
                     return True
     return False
 
@@ -41,12 +41,13 @@ def process_order(order_dict):
         )
     else:
         order = Order(
-            sender_pk=sender_pk,
-            receiver_pk=receiver_pk,
+
             buy_currency=buy_currency,
             sell_currency=sell_currency,
             buy_amount=buy_amount,
-            sell_amount=sell_amount
+            sell_amount=sell_amount,
+            sender_pk=sender_pk,
+            receiver_pk=receiver_pk
         )
 
     session.add(order)
@@ -62,28 +63,28 @@ def process_order(order_dict):
             session.commit()
             if order.buy_amount > existing_order.sell_amount:
                 child = {}
-                child['sender_pk'] = order.sender_pk
-                child['receiver_pk'] = order.receiver_pk
+
                 child['buy_currency'] = order.buy_currency
                 child['sell_currency'] = order.sell_currency
                 new_buy_amount = order.buy_amount - existing_order.sell_amount
                 child['buy_amount'] = new_buy_amount
                 child['sell_amount'] = 1.1 * (new_buy_amount * order.sell_amount / order.buy_amount)
+                child['sender_pk'] = order.sender_pk
+                child['receiver_pk'] = order.receiver_pk
                 child['creator_id'] = order.id
-                # child = Order(creator_id=child['creator_id'], sender_pk=child['sender_pk'],receiver_pk=child['receiver_pk'], buy_currency=child['buy_currency'], sell_currency=child['sell_currency'], buy_amount=child['buy_amount'], sell_amount=child['sell_amount'] )
                 process_order(child)
-                # session.add(child)
-                # session.commit()
+
             if existing_order.sell_amount > order.buy_amount:
                 child = {}
-                child['sender_pk'] = existing_order.sender_pk
-                child['receiver_pk'] = existing_order.receiver_pk
+
                 child['buy_currency'] = existing_order.buy_currency
                 child['sell_currency'] = existing_order.sell_currency
                 new_sell_amount = existing_order.sell_amount - order.buy_amount
                 child['sell_amount'] = new_sell_amount
                 child['buy_amount'] = 0.9 * (new_sell_amount * existing_order.buy_amount / existing_order.sell_amount)
                 child['creator_id'] = existing_order.id
+                child['sender_pk'] = existing_order.sender_pk
+                child['receiver_pk'] = existing_order.receiver_pk
                 process_order(child)
 
 
