@@ -52,16 +52,14 @@ def send_tokens(receiver_pk, tx_amount):
     tx = transaction.PaymentTxn(sender_pk, params, receiver_pk, tx_amount)
     signed_tx = tx.sign(account_private_key)
 
-    txid = None
             # TODO: Send the transaction to the testnet
-    try:
-        acl.send_transaction(signed_tx)
-        txid = acl.send_transaction(signed_tx)
-
-    except Exception as e:
-        print(e)
+    acl.send_transaction(signed_tx)
+    txid = acl.send_transaction(signed_tx)
 
 
+
+    print(account_public_key)
+    print(txid)
 
     return account_public_key, txid
 
