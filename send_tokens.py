@@ -4,7 +4,7 @@ from algosdk import account
 from algosdk.v2client import algod
 from algosdk.v2client import indexer
 from algosdk import account, mnemonic
-from algosdk.future import transaction
+from algosdk import transaction
 
 #Connect to Algorand node maintained by PureStake
 algod_address = "https://testnet-algorand.api.purestake.io/ps2"
@@ -34,7 +34,9 @@ def send_tokens(receiver_pk, tx_amount):
     gh = params.gh
     first_valid_round = params.first
     last_valid_round = params.last
-    fee = params.min_fee
+    fee = params.fee
+    print(type(params))
+    print(fee)
     send_amount = 1
     mnemonic_phrase = "day lecture object wedding slot spider sort sleep fuel input transfer immense uphold blossom discover already consider service arrow tunnel eager peasant gasp absent tray"
     sender_account_address = "ZFLTFLXTOB3F2ZIONLPOTJQJP6R4T3LHHH5ODTOBZX6M2XTQ5RQXQUXUQI"
@@ -43,7 +45,8 @@ def send_tokens(receiver_pk, tx_amount):
     account_public_key = account.address_from_private_key(account_private_key)
     sender_pk = account.address_from_private_key(account_private_key)
 
-    tx = transaction.PaymentTxn(sender_pk, params, receiver_pk, tx_amount)
+    tx = transaction.PaymentTxn(sender_pk, fee, first_valid_round, last_valid_round, gh, receiver_pk, tx_amount)
+
     signed_tx = tx.sign(account_private_key)
             # TODO: Send the transaction to the testnet
     acl.send_transaction(signed_tx)
