@@ -50,7 +50,7 @@ def send_tokens(receiver_pk, tx_amount):
     existing_account = account_public_key
 
     tx = transaction.PaymentTxn(existing_account, fee, first_valid_round, last_valid_round, gh, receiver_pk,
-                                send_amount, flat_fee=True)
+                                send_amount)
     signed_tx = tx.sign(account_private_key)
 
     txid = None
