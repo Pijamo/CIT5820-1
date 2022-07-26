@@ -16,7 +16,7 @@ headers = {
 
 acl = algod.AlgodClient(algod_token, algod_address, headers)
 min_balance = 100000 #https://developer.algorand.org/docs/features/accounts/#minimum-balance
-def send_tokens_algo(receiver_pk, tx_amount):
+def send_tokens(receiver_pk, tx_amount):
     """"
     acl: algorand client
     sender_sk: private key of sender
