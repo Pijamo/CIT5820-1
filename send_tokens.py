@@ -47,7 +47,7 @@ def send_tokens(receiver_pk, tx_amount):
 
     signed_tx = tx.sign(account_private_key)
             # TODO: Send the transaction to the testnet
-    acl.send_transaction(signed_tx)
+
     txid = acl.send_transaction(signed_tx)
     is_done = wait_for_confirmation(acl, txid)
     return account_public_key, txid
