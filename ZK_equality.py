@@ -1,26 +1,24 @@
 from zksk import Secret, DLRep
 from zksk import utils
 
-def ZK_equality(G,H):
 
-    #Generate two El-Gamal ciphertexts (C1,C2) and (D1,D2)
-    #G, H = utils.make_generators(num=2, seed=42)
-    r_1 = Secret(utils.get_random_num(bits=128))
-    r_2=  Secret(utils.get_random_num(bits=128))
-    k=Secret(utils.get_random_num(bits=128))
-    
-   
-    C_1= r_1.value*G
-    C_2=r_1.value*H + k.value*G
-    D_1= r_2.value*G
-    D_2=r_2.value*H+k.value*G
-    
-    s = DLRep(C_1,r_1*G)  & DLRep(D_1,r_2*G) & DLRep(D_2,r_2*H+k*G)& DLRep(C_2,r_1*H+k*G)
-    zkp = s.prove()
-    
+def ZK_equality(G, H):
+    # Generate two El-Gamal ciphertexts (C1,C2) and (D1,D2)
+    # G, H = utils.make_generators(num=2, seed=42)
+    r1 = Secret(utils.get_random_num(bits=128))
+    r2 = Secret(utils.get_random_num(bits=128))
+    m = Secret(utils.get_random_num(bits=128))
 
-    #Generate a NIZK proving equality of the plaintexts
-    s.verify(zkp)
+    C1 = r1.value * G
+    C2 = r1.value * H + m.value * G
+    D1 = r2.value * G
+    D2 = r2.value * H + m.value * G
 
-    #Return two ciphertexts and the proof
-    return (C_1,C_2), (D_1,D_2), zkp
+    stmt = DLRep(C1, r1 * G) & DLRep(C2, r1 * H + m * G) & DLRep(D1, r2 * G) & DLRep(D2, r2 * H + m * G)
+    zk_proof = stmt.prove()
+
+    # Generate a NIZK proving equality of the plaintexts
+    stmt.verify(zk_proof)
+
+    # Return two ciphertexts and the proof
+    return (C1, C2), (D1, D2), zk_proof
