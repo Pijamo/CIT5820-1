@@ -23,4 +23,4 @@ def ZK_equality(G,H):
     s.verify(zkp)
 
     #Return two ciphertexts and the proof
-    return (C_1,C_2), (D1,D_2), zkp
+    return (C_1,C_2), (D_1,D_2), zkp
