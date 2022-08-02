@@ -1,3 +1,4 @@
+
 from flask import Flask, request, g
 from flask_restful import Resource, Api
 from sqlalchemy import create_engine, select, MetaData, Table
@@ -36,15 +37,15 @@ def shutdown_session(response_or_exc):
 
 
 def order_obj_to_dict(order_obj):
-    d = {}
-    d['sender_pk'] = order_obj.sender_pk
-    d['receiver_pk'] = order_obj.receiver_pk
-    d['buy_currency'] = order_obj.buy_currency
-    d['sell_currency'] = order_obj.sell_currency
-    d['buy_amount'] = order_obj.buy_amount
-    d['sell_amount'] = order_obj.sell_amount
-    d['signature'] = order_obj.signature
-    return d
+    dic = {}
+    dic['buy_currency'] = order_obj.buy_currency
+    dic['sell_currency'] = order_obj.sell_currency
+    dic['buy_amount'] = order_obj.buy_amount
+    dic['sell_amount'] = order_obj.sell_amount
+    dic['sender_pk'] = order_obj.sender_pk
+    dic['receiver_pk'] = order_obj.receiver_pk
+    dic['signature'] = order_obj.signature
+    return dic
 
 
 def log_message(d):
@@ -93,12 +94,13 @@ def trade():
 
         # Your code here
         # Note that you can access the database session using g.session
+        payload = content['payload']
+        buy_currency = payload['buy_currency']
+        sell_currency = payload['sell_currency']
         sig = content['sig']
         payload = content['payload']
         receiver_pk = payload['receiver_pk']
         sender_pk = payload['sender_pk']
-        buy_currency = payload['buy_currency']
-        sell_currency = payload['sell_currency']
         buy_amount = payload['buy_amount']
         sell_amount = payload['sell_amount']
         platform = payload['platform']
