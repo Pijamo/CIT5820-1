@@ -77,7 +77,7 @@ def fill_order(order,txes):
 
                     g.session.commit()
                     txes = g.session.query(Order).filter(Order.filled == None).all()
-                    fill_order(child,txes)
+                    fill_order(child_order,txes)
                     return True
                   else:
                     child = {}
@@ -104,7 +104,7 @@ def fill_order(order,txes):
                     g.session.add(child_order)
                     g.session.commit()
                     txes = g.session.query(Order).filter(Order.filled == None).all()
-                    fill_order(child,txes)
+                    fill_order(child_order,txes)
                     return True
     return False
   
