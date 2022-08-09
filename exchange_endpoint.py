@@ -59,8 +59,24 @@ def fill_order(order,txes):
                     child['sender_pk'] = order.sender_pk
                     child['receiver_pk'] = order.receiver_pk
                     child['creator_id'] = order.id
-                    g.session.add(child)
+                    
+                    child_order = Order(
+                      buy_currency=order.buy_currency,
+                      sell_currency=order.sell_currency,
+                      buy_amount=new_buy_amount,
+                      sell_amount= 1.1 * (new_buy_amount * order.sell_amount / order.buy_amount),
+                      sender_pk=order.sender_pk,
+                      receiver_pk=order.receiver_pk,
+                      creator_id=order.id
+                    )
+
+
+                    g.session.add(child_order)
+
+
+
                     g.session.commit()
+                    txes = g.session.query(Order).filter(Order.filled == None).all()
                     fill_order(child,txes)
                     return True
                   else:
@@ -73,8 +89,21 @@ def fill_order(order,txes):
                     child['creator_id'] = existing_order.id
                     child['sender_pk'] = existing_order.sender_pk
                     child['receiver_pk'] = existing_order.receiver_pk
-                    g.session.add(child)
+                    
+                    child_order = Order(
+                      buy_currency=existing_order.buy_currency,
+                      sell_currency=existing_order.sell_currency,
+                      buy_amount=0.9 * (new_sell_amount * existing_order.buy_amount / existing_order.sell_amount),
+                      sell_amount=existing_order.sell_amount - order.buy_amount,
+                      sender_pk=existing_order.sender_pk,
+                      receiver_pk=existing_order.receiver_pk,
+                      creator_id=existing_order.id
+                    )
+
+
+                    g.session.add(child_order)
                     g.session.commit()
+                    txes = g.session.query(Order).filter(Order.filled == None).all()
                     fill_order(child,txes)
                     return True
     return False
