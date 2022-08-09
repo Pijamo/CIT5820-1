@@ -52,12 +52,16 @@ def deploy_nft(contract_file, name, symbol, minter_address):
 
 def pin_to_ipfs(data):
     assert isinstance(data, dict), f"Error pin_to_ipfs expects a dictionary"
-    files = {
-        'file': (json.dumps(data)),
-    }
-    response = requests.post('https://ipfs.infura.io:5001/api/v0/add', files=files)
-    pins = response.json()
-    return pins['Hash']
+    # YOUR CODE HERE
+    project_id = "2AWyCmr3uu5OI49xkqD9mfYKt8h"
+    project_secret = "0686be404d2357bfdbb700bcd02fcb07"
+    json_file = json.dumps(data)
+
+    response = requests.post('https://ipfs.infura.io:5001/api/v0/add', files={'file': json_file})
+
+    decoded_response = response.json()
+
+    return decoded_response["Hash"]
 
 
 def mint_nft(nft_contract, tokenId, metadata, owner_address, minter_address):
