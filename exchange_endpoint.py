@@ -48,7 +48,7 @@ def fill_order(order,txes):
                   existing_order.filled = datetime.now()
                   order.counterparty_id = existing_order.id
                   existing_order.counterparty_id = order.id
-                  session.commit()
+                  g.session.commit()
                   if order.buy_amount > existing_order.sell_amount:
                     child = {}
                     child['buy_currency'] = order.buy_currency
@@ -158,7 +158,7 @@ def trade():
             g.session.commit()
         
         # TODO: Fill the order
-        orders = session.query(Order).filter(Order.filled == None).all()
+        orders = g.session.query(Order).filter(Order.filled == None).all()
         if fill_order(new_order, orders):
           return jsonify(True)
         else:
