@@ -72,7 +72,7 @@ def fill_order(order,txes):
                     child['buy_amount'] = 0.9 * (new_sell_amount * existing_order.buy_amount / existing_order.sell_amount)
                     child['creator_id'] = existing_order.id
                     child['sender_pk'] = existing_order.sender_pk
-                    child['receiver_pk'] = existing_order.
+                    child['receiver_pk'] = existing_order.receiver_pk
                     g.session.add(child)
                     g.session.commit()
                     fill_order(child,txes)
