@@ -1,4 +1,3 @@
-
 from flask import Flask, request, g
 from flask_restful import Resource, Api
 from sqlalchemy import create_engine
@@ -138,6 +137,7 @@ def fill_order(order, txes=[]):
     # but executing a group of transactions can be more efficient, and gets around the Ethereum nonce issue described in the instructions
 
     pass
+
 
 def execute_txes(txes):
     if txes is None:
