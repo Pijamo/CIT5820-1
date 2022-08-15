@@ -130,24 +130,73 @@ def get_eth_keys(filename="eth_mnemonic.txt"):
     return eth_sk, eth_pk
 
 
-def fill_order(order, txes=[]):
-    # TODO:
-    # Match orders (same as Exchange Server II)
-    # Validate the order has a payment to back it (make sure the counterparty also made a payment)
-    # Make sure that you end up executing all resulting transactions!
-    order_obj = Order(sender_pk=order['sender_pk'], receiver_pk=order['receiver_pk'],
-                      buy_currency=order['buy_currency'], sell_currency=order['sell_currency'],
-                      buy_amount=order['buy_amount'], sell_amount=order['sell_amount'],
-                      creator_id=order.get('creator_id'))
+def fill_order(order, txes):
+    for existing_order in txes:
+        if not existing_order.filled:
+            if existing_order.sell_currency == order.buy_currency:
+                if order.sell_currency == existing_order.buy_currency:
+                    if order.buy_amount / order.sell_amount <= existing_order.sell_amount / existing_order.buy_amount:
+                        order.filled = datetime.now()
+                        existing_order.filled = datetime.now()
+                        order.counterparty_id = existing_order.id
+                        existing_order.counterparty_id = order.id
+                        g.session.commit()
+                        if order.buy_amount > existing_order.sell_amount:
+                            child = {}
+                            child['buy_currency'] = order.buy_currency
+                            child['sell_currency'] = order.sell_currency
+                            new_buy_amount = order.buy_amount - existing_order.sell_amount
+                            child['buy_amount'] = new_buy_amount
+                            child['sell_amount'] = 1.1 * (new_buy_amount * order.sell_amount / order.buy_amount)
+                            child['sender_pk'] = order.sender_pk
+                            child['receiver_pk'] = order.receiver_pk
+                            child['creator_id'] = order.id
 
-    result = g.session.query(Order).filter(Order.filled == None, Order.buy_currency == order['sell_currency'],
-                                           Order.sell_currency == order['buy_currency'],
-                                           Order.sell_amount / Order.buy_amount >= order['buy_amount'] / order[
-                                               'sell_amount']).first()
-    if result == None:
-        g.session.add(order_obj)
-        g.session.commit()
-        return
+                            child_order = Order(
+                                buy_currency=order.buy_currency,
+                                sell_currency=order.sell_currency,
+                                buy_amount=new_buy_amount,
+                                sell_amount=1.1 * (new_buy_amount * order.sell_amount / order.buy_amount),
+                                sender_pk=order.sender_pk,
+                                receiver_pk=order.receiver_pk,
+                                creator_id=order.id
+                            )
+
+                            g.session.add(child_order)
+
+                            g.session.commit()
+                            txes = g.session.query(Order).filter(Order.filled == None).all()
+                            fill_order(child_order, txes)
+                            return True
+                        else:
+                            child = {}
+                            child['buy_currency'] = existing_order.buy_currency
+                            child['sell_currency'] = existing_order.sell_currency
+                            new_sell_amount = existing_order.sell_amount - order.buy_amount
+                            child['sell_amount'] = new_sell_amount
+                            child['buy_amount'] = 0.9 * (
+                                        new_sell_amount * existing_order.buy_amount / existing_order.sell_amount)
+                            child['creator_id'] = existing_order.id
+                            child['sender_pk'] = existing_order.sender_pk
+                            child['receiver_pk'] = existing_order.receiver_pk
+
+                            child_order = Order(
+                                buy_currency=existing_order.buy_currency,
+                                sell_currency=existing_order.sell_currency,
+                                buy_amount=0.9 * (
+                                            new_sell_amount * existing_order.buy_amount / existing_order.sell_amount),
+                                sell_amount=existing_order.sell_amount - order.buy_amount,
+                                sender_pk=existing_order.sender_pk,
+                                receiver_pk=existing_order.receiver_pk,
+                                creator_id=existing_order.id
+                            )
+
+                            g.session.add(child_order)
+                            g.session.commit()
+                            txes = g.session.query(Order).filter(Order.filled == None).all()
+                            fill_order(child_order, txes)
+                            return True
+    return False
 
     order_obj.filled = datetime.now()
     order_obj.counterparty_id = result.id
