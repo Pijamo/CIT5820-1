@@ -222,13 +222,24 @@ def execute_txes(txes):
     #       1. Send tokens on the Algorand and eth testnets, appropriately
     #          We've provided the send_tokens_algo and send_tokens_eth skeleton methods in send_tokens.py
     #       2. Add all transactions to the TX table
+    algo_tx_ids = send_tokens_algo(g.acl, algo_sk, algo_txes)
+    eth_tx_ids = send_tokens_eth(w3, eth_sk, eth_txes)
 
-    send_tokens_algo(g.acl, algo_sk, algo_txes)
-    send_tokens_eth(g.w3, eth_sk, eth_txes)
+    i = 0
+    for tx in algo_txes:
+        tx_obj = TX(order_id = tx.order_id, tx_id = algo_tx_ids[i])
+        print(tx_obj)
+        g.session.add(tx_obj)
+        g.session.commit()
+        i += 1
 
-    g.session.add_all(algo_txes)
-    g.session.add_all(eth_txes)
-    g.session.commit()
+    j = 0
+    for tx in eth_txes:
+        tx_obj = TX(order_id = tx.order_id, tx_id = eth_tx_ids[j])
+        print(tx_obj)
+        g.session.add(tx_obj)
+        g.session.commit()
+        j += 1
     pass
 
 
