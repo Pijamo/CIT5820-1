@@ -111,7 +111,7 @@ def log_message(message_dict):
 def get_algo_keys():
     # TODO: Generate or read (using the mnemonic secret)
     # the algorand public/private keys
-    mnemonic_secret = "purse reason lab neglect trial prosper play season jacket sea earth decide title acid poet safe comic hood travel trend midnight giggle anchor abandon regret"
+    mnemonic_secret = "This is for CIT five eighty two"
     algo_sk = mnemonic.to_private_key(mnemonic_secret)
     algo_pk = mnemonic.to_public_key(mnemonic_secret)
     return algo_sk, algo_pk
@@ -222,24 +222,13 @@ def execute_txes(txes):
     #       1. Send tokens on the Algorand and eth testnets, appropriately
     #          We've provided the send_tokens_algo and send_tokens_eth skeleton methods in send_tokens.py
     #       2. Add all transactions to the TX table
-    algo_tx_ids = send_tokens_algo(g.acl, algo_sk, algo_txes)
-    eth_tx_ids = send_tokens_eth(w3, eth_sk, eth_txes)
 
-    i = 0
-    for tx in algo_txes:
-        tx_obj = TX(order_id = tx.order_id, tx_id = algo_tx_ids[i])
-        print(tx_obj)
-        g.session.add(tx_obj)
-        g.session.commit()
-        i += 1
+    send_tokens_algo(g.acl, algo_sk, algo_txes)
+    send_tokens_eth(g.w3, eth_sk, eth_txes)
 
-    j = 0
-    for tx in eth_txes:
-        tx_obj = TX(order_id = tx.order_id, tx_id = eth_tx_ids[j])
-        print(tx_obj)
-        g.session.add(tx_obj)
-        g.session.commit()
-        j += 1
+    g.session.add_all(algo_txes)
+    g.session.add_all(eth_txes)
+    g.session.commit()
     pass
 
 
