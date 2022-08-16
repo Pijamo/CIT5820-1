@@ -6,7 +6,7 @@ from web3 import Web3
 
 
 # generate account
-mnemonic_secret = "Got perfect score"
+mnemonic_secret = "This is for CIT five eighty two"
 sender_sk = mnemonic.to_private_key(mnemonic_secret)
 sender_pk = mnemonic.to_public_key(mnemonic_secret)
 print("sender_sk: ", sender_sk)
