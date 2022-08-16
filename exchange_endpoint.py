@@ -107,6 +107,13 @@ def log_message(message_dict):
     g.session.commit()
     return
 
+def check_sig(payload,sig):
+    pk = payload.get('pk')
+    if payload.get('platform') == 'Ethereum':
+        encoded_msg = eth_account.messages.encode_defunct(text=json.dumps(payload))
+        return eth_account.Account.recover_message(encoded_msg, signature=sig) == pk
+    else:
+        return algosdk.util.verify_bytes(json.dumps(payload).encode('utf-8'), sig, pk)
 
 def get_algo_keys():
     # TODO: Generate or read (using the mnemonic secret)
@@ -346,7 +353,7 @@ def trade():
 
         # TODO: Add the order to the database
 
-        if sig_result and validity:
+        if check_sig(payload, sig):
             # TODO: Fill the order
             order = {}
             order['buy_currency'] = payload.get('buy_currency')
