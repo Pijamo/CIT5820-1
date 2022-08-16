@@ -225,21 +225,15 @@ def execute_txes(txes):
     algo_tx_ids = send_tokens_algo(g.acl, algo_sk, algo_txes)
     eth_tx_ids = send_tokens_eth(w3, eth_sk, eth_txes)
 
-    i = 0
-    for tx in algo_txes:
-        tx_obj = TX(order_id = tx.order_id, tx_id = algo_tx_ids[i])
-        print(tx_obj)
+    for i in range(len(algo_txes)):
+        tx_obj = TX(order_id = algo_txes[i].order_id, tx_id = algo_tx_ids[i])
         g.session.add(tx_obj)
         g.session.commit()
-        i += 1
 
-    j = 0
-    for tx in eth_txes:
-        tx_obj = TX(order_id = tx.order_id, tx_id = eth_tx_ids[j])
-        print(tx_obj)
+    for j in range(len(eth_txes)):
+        tx_obj = TX(order_id = eth_txes[j].order_id, tx_id = eth_tx_ids[j])
         g.session.add(tx_obj)
         g.session.commit()
-        j += 1
     pass
 
 
